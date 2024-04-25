@@ -15,10 +15,21 @@ export class SecurityBaseTypescriptStack extends cdk.Stack {
       s3KeyPrefix: 'cloudtrail',
     });
 
-    const configurationRecorder = new cdk.aws_config.CfnConfigurationRecorder(this, 'aws-cdk-demo-configuration-recorder', {
+    new cdk.aws_config.CfnConfigurationRecorder(this, 'aws-cdk-demo-configuration-recorder', {
       roleArn: new cdk.aws_iam.Role(this, 'aws-cdk-demo-configuration-recorder-role', {
         assumedBy: new cdk.aws_iam.ServicePrincipal('config.amazonaws.com'),
-        managedPolicies: [cdk.aws_iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWS_ConfigRole')]
+        managedPolicies: [cdk.aws_iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWS_ConfigRole')],
+        inlinePolicies: {
+          'aws-cdk-demo-configuration-recorder-policy': new cdk.aws_iam.PolicyDocument({
+            statements: [
+              new cdk.aws_iam.PolicyStatement({
+                actions: ['s3:PutObject'],
+                effect: cdk.aws_iam.Effect.ALLOW,
+                resources: [`${securityLogsBucket.bucketArn}/config/*`],
+              }),
+            ]
+          })
+        }
       }).roleArn,
       recordingGroup: {
         allSupported: true,
@@ -26,7 +37,7 @@ export class SecurityBaseTypescriptStack extends cdk.Stack {
       },
       recordingMode: {
         recordingFrequency: 'CONTINUOUS',
-      }
+      },
     });
 
     new cdk.aws_config.CfnDeliveryChannel(this, 'aws-cdk-demo-config-delivery-channel', {
@@ -37,8 +48,7 @@ export class SecurityBaseTypescriptStack extends cdk.Stack {
       }
     });
 
-    const vpc = new cdk.aws_ec2.Vpc(this, 'aws-cdk-demo-vpc', {
-    });
+    const vpc = new cdk.aws_ec2.Vpc(this, 'aws-cdk-demo-vpc', {});
 
     vpc.addFlowLog('aws-cdk-demo-vpc-flow-log', {
       destination: cdk.aws_ec2.FlowLogDestination.toS3(securityLogsBucket, 'vpcflow'),
