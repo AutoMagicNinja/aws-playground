@@ -2,6 +2,7 @@
 import 'source-map-support/register';
 import * as cdk from 'aws-cdk-lib';
 import { SecurityBaseTypescriptStack } from '../lib/security-base-typescript-stack';
+import { RoleBasedIAMStack } from '../lib/role-based-iam-stack';
 
 const app = new cdk.App();
 new SecurityBaseTypescriptStack(app, 'SecurityBaseTypescriptStack', {
@@ -19,3 +20,5 @@ new SecurityBaseTypescriptStack(app, 'SecurityBaseTypescriptStack', {
 
   /* For more information, see https://docs.aws.amazon.com/cdk/latest/guide/environments.html */
 });
+
+new RoleBasedIAMStack(app, 'RoleBasedIAMStack', {});
