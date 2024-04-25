@@ -13,6 +13,7 @@
       buildInputs = [
         nodejs
         nodePackages.aws-cdk
+        awscli2
       ];
       shellHook = ''
         export NODE_PATH="${nodejs}/lib/node_modules:${nodePackages.aws-cdk}/lib/node_modules:$NODE_PATH"
