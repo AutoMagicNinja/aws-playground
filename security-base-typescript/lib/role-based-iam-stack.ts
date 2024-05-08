@@ -17,28 +17,31 @@ export class RoleBasedIAMStack extends cdk.Stack {
     // Define IAM roles the users may assume
     const SecurityAdminRole = new cdk.aws_iam.Role(this, 'SecurityAdminRole', {
       roleName: 'CDK-TS-SecurityAdmin',
-      assumedBy: new cdk.aws_iam.AccountRootPrincipal(),
+      assumedBy: IncidentResponderUser,
       managedPolicies: [
         cdk.aws_iam.ManagedPolicy.fromAwsManagedPolicyName('AdministratorAccess')
-      ]
+      ],
+      maxSessionDuration: cdk.Duration.hours(1),
     });
     const SecurityAnalystRole = new cdk.aws_iam.Role(this, 'SecurityAnalystRole', {
       roleName: 'CDK-TS-SecurityAnalyst',
-      assumedBy: new cdk.aws_iam.AccountRootPrincipal(),
+      assumedBy: IncidentResponderUser,
       managedPolicies: [
         cdk.aws_iam.ManagedPolicy.fromAwsManagedPolicyName('SecurityAudit'),
         cdk.aws_iam.ManagedPolicy.fromAwsManagedPolicyName('ReadOnlyAccess')
-      ]
+      ],
+      maxSessionDuration: cdk.Duration.hours(4),
     });
     const PowerUserRole = new cdk.aws_iam.Role(this, 'PowerUserRole', {
       roleName: 'CDK-TS-PowerUser',
-      assumedBy: new cdk.aws_iam.AccountRootPrincipal(),
+      assumedBy: DeveloperUser,
       managedPolicies: [
         cdk.aws_iam.ManagedPolicy.fromAwsManagedPolicyName('job-function/DataScientist'),
         cdk.aws_iam.ManagedPolicy.fromAwsManagedPolicyName('job-function/NetworkAdministrator'),
         cdk.aws_iam.ManagedPolicy.fromAwsManagedPolicyName('PowerUserAccess'),
         cdk.aws_iam.ManagedPolicy.fromAwsManagedPolicyName('ReadOnlyAccess')
-      ]
+      ],
+      maxSessionDuration: cdk.Duration.hours(2),
     });
 
     // By default, limit the users to only assume their roles
